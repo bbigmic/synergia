@@ -150,7 +150,10 @@ export default function Home() {
               key={m.id}
               className="rounded-xl bg-white p-4 text-sm shadow-sm"
             >
-              {m.content}
+              <p className="text-xs text-neutral-400 mb-2">
+                Kategoria: {m.category}
+              </p>
+              <p>{m.content}</p>
             </li>
           ))}
         </ul>
