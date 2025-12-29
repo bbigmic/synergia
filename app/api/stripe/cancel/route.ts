@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import Stripe from "stripe";
 
 export async function POST() {
   try {
@@ -22,7 +23,7 @@ export async function POST() {
     try {
       const updatedSubscription = await stripe.subscriptions.update(subscription.stripeSubscriptionId, { 
         cancel_at_period_end: true 
-      });
+      }) as Stripe.Subscription;
       
       // Webhook automatycznie zaktualizuje status gdy subskrypcja zostanie anulowana na końcu okresu
       // Na razie pozostawiamy status "active" w bazie, bo subskrypcja jest nadal aktywna do końca okresu
