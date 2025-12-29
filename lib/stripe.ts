@@ -5,8 +5,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  // Używamy domyślnej wersji API (stabilna) zamiast beta, aby uniknąć problemów z typami TypeScript
-  // apiVersion: "2025-02-24.acacia", // beta wersja może mieć problemy z typami
+  apiVersion: "2025-12-15.clover",
 });
 
 export const WEEKLY_PRICE_ID = process.env.STRIPE_WEEKLY_PRICE_ID || "";
