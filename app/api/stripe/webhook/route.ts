@@ -41,18 +41,16 @@ export async function POST(req: Request) {
 
         // Handle subscription purchase
         if (userId && session.subscription) {
-          const subscription = (await stripe.subscriptions.retrieve(
+          const subscription = await stripe.subscriptions.retrieve(
             session.subscription as string
-          )) as Stripe.Subscription;
+          );
 
-          // Używamy bracket notation, aby uniknąć problemów z typami TypeScript na Vercel
-          const currentPeriodEnd = (subscription as any).current_period_end as number;
           await prisma.subscription.updateMany({
             where: { stripeCustomerId: session.customer as string },
             data: {
               stripeSubscriptionId: subscription.id,
               status: subscription.status === "active" ? "active" : "pending",
-              currentPeriodEnd: new Date(currentPeriodEnd * 1000),
+              currentPeriodEnd: new Date(subscription.current_period_end * 1000),
             },
           });
 
@@ -100,8 +98,6 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
-        // Używamy bracket notation, aby uniknąć problemów z typami TypeScript na Vercel
-        const currentPeriodEnd = (subscription as any).current_period_end as number;
         await prisma.subscription.updateMany({
           where: { stripeCustomerId: customerId },
           data: {
@@ -111,7 +107,7 @@ export async function POST(req: Request) {
                 : subscription.status === "canceled"
                 ? "canceled"
                 : "past_due",
-            currentPeriodEnd: new Date(currentPeriodEnd * 1000),
+            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
           },
         });
         break;
