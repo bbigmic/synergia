@@ -21,9 +21,14 @@ export async function POST() {
     // Cancel at period end - subskrypcja pozostanie aktywna do końca opłaconego okresu,
     // ale nie będzie pobierane za następny okres
     try {
-      const updatedSubscription = await stripe.subscriptions.update(subscription.stripeSubscriptionId, { 
+      await stripe.subscriptions.update(subscription.stripeSubscriptionId, { 
         cancel_at_period_end: true 
-      }) as Stripe.Subscription;
+      });
+      
+      // Pobierz zaktualizowaną subskrypcję, aby uzyskać aktualne dane
+      const updatedSubscription = await stripe.subscriptions.retrieve(
+        subscription.stripeSubscriptionId
+      );
       
       // Webhook automatycznie zaktualizuje status gdy subskrypcja zostanie anulowana na końcu okresu
       // Na razie pozostawiamy status "active" w bazie, bo subskrypcja jest nadal aktywna do końca okresu
