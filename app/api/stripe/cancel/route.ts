@@ -26,9 +26,9 @@ export async function POST() {
       });
       
       // Pobierz zaktualizowaną subskrypcję, aby uzyskać aktualne dane
-      const updatedSubscription = await stripe.subscriptions.retrieve(
+      const updatedSubscription = (await stripe.subscriptions.retrieve(
         subscription.stripeSubscriptionId
-      );
+      )) as Stripe.Subscription;
       
       // Webhook automatycznie zaktualizuje status gdy subskrypcja zostanie anulowana na końcu okresu
       // Na razie pozostawiamy status "active" w bazie, bo subskrypcja jest nadal aktywna do końca okresu

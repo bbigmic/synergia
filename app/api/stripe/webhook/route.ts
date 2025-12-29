@@ -39,9 +39,9 @@ export async function POST(req: Request) {
 
         // Handle subscription purchase
         if (userId && session.subscription) {
-          const subscription = await stripe.subscriptions.retrieve(
+          const subscription = (await stripe.subscriptions.retrieve(
             session.subscription as string
-          );
+          )) as Stripe.Subscription;
 
           await prisma.subscription.updateMany({
             where: { stripeCustomerId: session.customer as string },
