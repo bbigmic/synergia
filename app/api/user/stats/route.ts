@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 const FREE_LIMIT = 3;
 const SUBSCRIBED_LIMIT = 30;
 

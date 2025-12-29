@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/serverAuth";
 import { awardXP, BASE_XP } from "@/lib/experience";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const user = await getServerUser();

@@ -3,6 +3,8 @@ import { getServerUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
 import { awardXP, BASE_XP } from "@/lib/experience";
 
+export const dynamic = 'force-dynamic';
+
 const CREDITS_PER_USAGE = 300;
 
 export async function POST(req: Request) {

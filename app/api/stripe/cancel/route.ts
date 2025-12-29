@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     const user = await getServerUser();

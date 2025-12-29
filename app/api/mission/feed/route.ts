@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/serverAuth";
 
+export const dynamic = 'force-dynamic';
+
 const DAILY_FEED_LIMIT = 50;
 
 export async function GET(req: Request) {

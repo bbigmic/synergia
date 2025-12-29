@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 import { awardXP, BASE_XP } from "@/lib/experience";
 
+export const dynamic = 'force-dynamic';
+
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {

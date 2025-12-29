@@ -3,6 +3,8 @@ import { stripe, WEEKLY_PRICE_ID } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { getServerUser } from "@/lib/serverAuth";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const userObj = await getServerUser();

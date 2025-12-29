@@ -3,6 +3,8 @@ import { getServerUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const user = await getServerUser();

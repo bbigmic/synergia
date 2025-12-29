@@ -4,6 +4,8 @@ import { openai } from "@/lib/openai";
 import { getServerUser } from "@/lib/serverAuth";
 import { awardXP, BASE_XP } from "@/lib/experience";
 
+export const dynamic = 'force-dynamic';
+
 const SYSTEM_PROMPT = `
 Jesteś projektantem misji dla par.
 Tworzysz krótkie, przemyślane misje dla par.
