@@ -32,10 +32,12 @@ export async function POST() {
       
       // Webhook automatycznie zaktualizuje status gdy subskrypcja zostanie anulowana na końcu okresu
       // Na razie pozostawiamy status "active" w bazie, bo subskrypcja jest nadal aktywna do końca okresu
+      // Używamy bracket notation, aby uniknąć problemów z typami TypeScript na Vercel
+      const currentPeriodEnd = (updatedSubscription as any).current_period_end as number;
       await prisma.subscription.update({
         where: { id: subscription.id },
         data: { 
-          currentPeriodEnd: new Date(updatedSubscription.current_period_end * 1000),
+          currentPeriodEnd: new Date(currentPeriodEnd * 1000),
           // Status pozostaje "active" do końca okresu - webhook zaktualizuje go na "canceled" gdy okres się skończy
         },
       });
