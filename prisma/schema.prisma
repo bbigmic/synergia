@@ -8,8 +8,133 @@ datasource db {
 }
 
 model Mission {
+  id         String       @id @default(uuid())
+  category   String
+  content    String
+  extraMode  Boolean      @default(false)
+  ratingScore Int         @default(0)
+  createdAt  DateTime     @default(now())
+  userId     String?
+  user       User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likedBy    MissionLike[]
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String?       @unique
+  password      String?
+  name          String?
+  level         Int           @default(1)
+  experience    Int           @default(0)
+  createdAt     DateTime      @default(now())
+  missions      Mission[]
+  subscriptions Subscription[]
+  usage         Usage[]
+  credits       Credit[]
+  usagePurchases UsagePurchase[]
+  accounts      Account[]
+  sessions      Session[]
+  likedMissions MissionLike[]
+  feedSwipes    FeedSwipe[]
+}
+
+model Subscription {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId String  @unique
+  stripeSubscriptionId String? @unique
+  status          String   // active, canceled, past_due
+  currentPeriodEnd DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Usage {
   id        String   @id @default(uuid())
-  category  String
-  content   String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?  // For anonymous users
+  purchaseId String? // If this usage comes from a purchase
+  purchase  UsagePurchase? @relation("UsageToPurchase", fields: [purchaseId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 }
+
+model Credit {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model UsagePurchase {
+  id                  String   @id @default(uuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount              Int      // Ilość zakupionych użyć
+  stripePaymentIntentId String? @unique
+  stripeSessionId     String?  @unique
+  status              String   @default("pending") // pending, completed, failed
+  createdAt           DateTime @default(now())
+  completedAt         DateTime?
+  usages              Usage[]  @relation("UsageToPurchase") // Usage records that came from this purchase
+}
+
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model MissionLike {
+  id        String   @id @default(uuid())
+  userId    String
+  missionId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, missionId])
+}
+
+model FeedSwipe {
+  id        String   @id @default(uuid())
+  userId    String
+  missionId String
+  direction String   // "left" or "right"
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
