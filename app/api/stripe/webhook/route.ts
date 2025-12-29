@@ -45,12 +45,16 @@ export async function POST(req: Request) {
             session.subscription as string
           );
 
+          // Uwaga: TypeScript na Vercel widzi typ jako Response<Subscription> zamiast Subscription,
+          // dlatego używamy rzutowania. Wersja API 2025-12-15.clover powinna mieć poprawne typy,
+          // ale problem występuje tylko na Vercel (prawdopodobnie różnice w wersjach TypeScript).
+          const currentPeriodEnd = (subscription as any).current_period_end as number;
           await prisma.subscription.updateMany({
             where: { stripeCustomerId: session.customer as string },
             data: {
               stripeSubscriptionId: subscription.id,
               status: subscription.status === "active" ? "active" : "pending",
-              currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+              currentPeriodEnd: new Date(currentPeriodEnd * 1000),
             },
           });
 
@@ -98,6 +102,10 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
+        // Uwaga: TypeScript na Vercel widzi typ jako Response<Subscription> zamiast Subscription,
+        // dlatego używamy rzutowania. Wersja API 2025-12-15.clover powinna mieć poprawne typy,
+        // ale problem występuje tylko na Vercel (prawdopodobnie różnice w wersjach TypeScript).
+        const currentPeriodEnd = (subscription as any).current_period_end as number;
         await prisma.subscription.updateMany({
           where: { stripeCustomerId: customerId },
           data: {
@@ -107,7 +115,7 @@ export async function POST(req: Request) {
                 : subscription.status === "canceled"
                 ? "canceled"
                 : "past_due",
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodEnd: new Date(currentPeriodEnd * 1000),
           },
         });
         break;
